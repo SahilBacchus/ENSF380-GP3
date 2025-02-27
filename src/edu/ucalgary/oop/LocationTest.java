@@ -1,5 +1,5 @@
 /*
-Copyright Ann Barcomb and Khawla Shnaikat, 2024-2025
+Copyright Ann Barcomb and Khawla Shnaikat, 2024
 Licensed under GPL v3
 See LICENSE.txt for more information.
 */
@@ -8,7 +8,8 @@ package edu.ucalgary.oop;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import java.util.ArrayList;
+import java.util.Arrays;
+
 
 public class LocationTest {
     private Location location;
@@ -18,21 +19,27 @@ public class LocationTest {
     @Before
     public void setUp() {
         // Initializing test objects before each test method
-        location = new Location("Shelter A", "1234 Shelter Ave");
-        victim = new DisasterVictim("John Doe", "2025-01-01");
-        supply = new Supply("Water Bottle", 10);
+        location = new Location("Amis Shelter", "1234 Amis Shelterve");
+        victim = new DisasterVictim("Yaw Dwomoh", "2024-01-01");
+        supply = new Supply("pillow", 10);
     }
 
     // Helper method to check if a supply is in the list
-    private boolean containsSupply(ArrayList<Supply> supplies, Supply supplyToCheck) {
-        return supplies.contains(supplyToCheck);
+    private boolean containsSupply(Supply[] supplies, Supply supplyToCheck) {
+        int i;
+        for (i = 0; i < supplies.length; i++) {
+            if (supplies[i] == supplyToCheck) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Test
     public void testConstructor() {
         assertNotNull("Constructor should create a non-null Location object", location);
-        assertEquals("Constructor should set the name correctly", "Shelter A", location.getName());
-        assertEquals("Constructor should set the address correctly", "1234 Shelter Ave", location.getAddress());
+        assertEquals("Constructor should set the name correctly", "Amis Shelter", location.getName());
+        assertEquals("Constructor should set the address correctly", "1234 Amis Shelterve", location.getAddress());
     }
 
     @Test
@@ -52,22 +59,33 @@ public class LocationTest {
     @Test
     public void testAddOccupant() {
         location.addOccupant(victim);
-        assertTrue("addOccupant should add a disaster victim to the occupants list", location.getOccupants().contains(victim));
+        DisasterVictim[] actualVictim = location.getOccupants();
+        assertEquals("addOccupant should add a disaster victim to the occupants list", victim, actualVictim[actualVictim.length-1]);
     }
 
     @Test
     public void testRemoveOccupant() {
-        location.addOccupant(victim); // Ensure the victim is added first
-        location.removeOccupant(victim);
-        assertFalse("removeOccupant should remove the disaster victim from the occupants list", location.getOccupants().contains(victim));
+        DisasterVictim victim2 = new DisasterVictim("Akemi", "2021-01-01");
+        location.addOccupant(victim2); // Ensure the victim is added first
+        location.removeOccupant(victim2);
+        DisasterVictim[] actualVictims = location.getOccupants();
+        int i;
+        boolean success = true;
+        for (i = 0; i < actualVictims.length; i++) {
+            if (actualVictims[i] == victim2) {
+                success = false;
+                break;
+            } 
+        }
+        assertTrue("removeOccupant should remove the disaster victim from the occupants list", success);
     }
 
     @Test
     public void testSetAndGetOccupants() {
-        ArrayList<DisasterVictim> newOccupants = new ArrayList<>();
-        newOccupants.add(victim);
+        DisasterVictim[] newOccupants = {victim};
         location.setOccupants(newOccupants);
-        assertTrue("setOccupants should replace the occupants list with the new list", location.getOccupants().containsAll(newOccupants));
+        DisasterVictim[] actualOccupants = location.getOccupants();
+        assertEquals("setOccupants should replace the occupants list with the new list", newOccupants, actualOccupants);
     }
 
     @Test
@@ -85,9 +103,10 @@ public class LocationTest {
 
     @Test
     public void testSetAndGetSupplies() {
-        ArrayList<Supply> newSupplies = new ArrayList<>();
-        newSupplies.add(supply);
+        Supply[] newSupplies = { supply };
         location.setSupplies(newSupplies);
-        assertTrue("setSupplies should replace the supplies list with the new list", containsSupply(location.getSupplies(), supply));
+        Supply[] actualSupplies = location.getSupplies();
+
+        assertEquals("setSupplies should replace the supplies list with the new list", actualSupplies, newSupplies);
     }
 }
